@@ -42,6 +42,10 @@ int load_document(Document *doc, const char *filename)
         return 0;
     }
 
+
+    
+    
+
     /* Remove existing document */
     free_document(doc);
     init_document(doc);
