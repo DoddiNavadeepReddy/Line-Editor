@@ -1,5 +1,3 @@
-editor.h 
-```
 #ifndef EDITOR_H
 #define EDITOR_H
 
@@ -26,4 +24,3 @@ void display(Document *doc);
 void run_editor(Document *doc);
 
 #endif /* EDITOR_H */
-```
