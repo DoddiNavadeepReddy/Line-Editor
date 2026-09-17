@@ -1,10 +1,9 @@
-editor.c 
-```
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "editor.h"
 #include "file.h"
+#include "undo.h"
 
 int delete_line(Document *doc, int line_no) {
     if (doc == NULL) {
@@ -92,6 +91,7 @@ void run_editor(Document *doc) {
             }
             int line_no = atoi(rest);
             char *text = space + 1;
+            save_undo_snapshot(doc);
             if (insert_line(doc, line_no, text)) {
                 printf("Inserted.\n");
             } else {
@@ -100,6 +100,7 @@ void run_editor(Document *doc) {
 
         } else if (strcmp(command, "d") == 0) {
             int line_no = atoi(rest);
+            save_undo_snapshot(doc);
             if (delete_line(doc, line_no)) {
                 printf("Deleted.\n");
             } else {
@@ -125,6 +126,7 @@ void run_editor(Document *doc) {
                 printf("Usage: r <filename>\n");
                 continue;
             }
+            save_undo_snapshot(doc);
             if (load_document(doc, rest)) {
                 printf("Loaded from %s\n", rest);
             } else {
@@ -145,11 +147,19 @@ void run_editor(Document *doc) {
                 printf("Usage: f <old> <new>\n");
                 continue;
             }
+            save_undo_snapshot(doc);
             int changed = replace_all(doc, old_word, new_word);
             printf("Replaced in %d line(s).\n", changed);
 
         } else if (strcmp(command, "stats") == 0) {
             print_document_stats(doc);
+
+        } else if (strcmp(command, "u") == 0) {
+            if (undo_last_action(doc)) {
+                printf("Undo successful.\n");
+            } else {
+                printf("Nothing to undo.\n");
+            }
 
         } else if (strcmp(command, "help") == 0) {
             print_help();
@@ -162,5 +172,6 @@ void run_editor(Document *doc) {
             printf("Unknown command. Type 'help' for a list of commands.\n");
         }
     }
+
+    free_undo_snapshot();
 }
-```
